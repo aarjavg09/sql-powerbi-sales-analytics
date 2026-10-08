@@ -1,25 +1,12 @@
--- ============================================================
--- SQL + Power BI Sales Analytics
--- 01_data_quality_audit.sql
--- Purpose: Validate transaction data before reporting
--- ============================================================
-
 USE sales;
 
-
--- ============================================================
--- 1. Transaction Row Count
--- ============================================================
-
+-- Basic transaction count
 SELECT
     COUNT(*) AS total_transactions
 FROM transaction_clean;
 
 
--- ============================================================
--- 2. NULL / Missing Value Audit
--- ============================================================
-
+-- Check for missing values in the transaction data
 SELECT
     SUM(product_code IS NULL) AS missing_product_codes,
     SUM(customer_code IS NULL) AS missing_customer_codes,
@@ -33,10 +20,7 @@ SELECT
 FROM transaction_clean;
 
 
--- ============================================================
--- 3. Duplicate Transaction-Record Audit
--- ============================================================
-
+-- Check for duplicate transaction records
 SELECT
     product_code,
     customer_code,
@@ -59,10 +43,7 @@ HAVING COUNT(*) > 1
 ORDER BY duplicate_count DESC;
 
 
--- ============================================================
--- 4. Currency Audit
--- ============================================================
-
+-- Check which currencies are present
 SELECT
     currency,
     COUNT(*) AS transaction_count
@@ -71,10 +52,7 @@ GROUP BY currency
 ORDER BY transaction_count DESC;
 
 
--- ============================================================
--- 5. Normalized INR Validation
--- ============================================================
-
+-- Confirm that all transaction amounts have been normalized to INR
 SELECT
     COUNT(*) AS total_transactions,
     SUM(sales_amount_inr IS NULL) AS missing_inr_amounts,
@@ -82,20 +60,14 @@ SELECT
 FROM transaction_clean;
 
 
--- ============================================================
--- 6. Zero-Value Transaction Audit
--- ============================================================
-
+-- Identify zero-value transactions
 SELECT
     COUNT(*) AS zero_value_transactions
 FROM transaction_clean
 WHERE sales_amount_inr = 0;
 
 
--- ============================================================
--- 7. Negative Transaction Audit
--- ============================================================
-
+-- Check for negative transactions
 SELECT
     COUNT(*) AS negative_transactions,
     SUM(sales_amount_inr) AS negative_sales_amount
@@ -103,10 +75,7 @@ FROM transaction_clean
 WHERE sales_amount_inr < 0;
 
 
--- ============================================================
--- 8. Product Master Mapping Audit
--- ============================================================
-
+-- Check whether transaction products exist in the product master
 SELECT
     COUNT(DISTINCT t.product_code) AS transaction_product_codes,
     COUNT(DISTINCT p.product_code) AS mapped_product_codes,
@@ -117,10 +86,7 @@ LEFT JOIN products p
     ON t.product_code = p.product_code;
 
 
--- ============================================================
--- 9. Unmapped Product Transactions
--- ============================================================
-
+-- Measure the transaction and sales impact of unmapped products
 SELECT
     COUNT(*) AS unmapped_product_transactions,
     SUM(t.sales_amount_inr) AS unmapped_sales_amount
@@ -130,10 +96,7 @@ LEFT JOIN products p
 WHERE p.product_code IS NULL;
 
 
--- ============================================================
--- 10. Customer Master Mapping Audit
--- ============================================================
-
+-- Check customer master coverage
 SELECT
     COUNT(DISTINCT t.customer_code) AS transaction_customers,
     COUNT(DISTINCT c.customer_code) AS mapped_customers
@@ -142,10 +105,7 @@ LEFT JOIN customers c
     ON t.customer_code = c.customer_code;
 
 
--- ============================================================
--- 11. Market Master Mapping Audit
--- ============================================================
-
+-- Check market master coverage
 SELECT
     COUNT(DISTINCT t.market_code) AS transaction_markets,
     COUNT(DISTINCT m.markets_code) AS mapped_markets
@@ -154,10 +114,7 @@ LEFT JOIN markets m
     ON t.market_code = m.markets_code;
 
 
--- ============================================================
--- 12. Transaction Date Coverage
--- ============================================================
-
+-- Check the date range covered by the transactions
 SELECT
     MIN(order_date) AS first_transaction_date,
     MAX(order_date) AS last_transaction_date,
@@ -165,17 +122,16 @@ SELECT
 FROM transaction_clean;
 
 
--- ============================================================
--- 13. Financial Integrity Summary
--- ============================================================
-
+-- Final financial integrity check
 SELECT
     COUNT(*) AS recorded_transactions,
     SUM(sales_amount_inr) AS recorded_sales_inr,
-    SUM(CASE
-        WHEN sales_amount_inr > 0 THEN sales_amount_inr
-        ELSE 0
-    END) AS business_sales_inr,
+    SUM(
+        CASE
+            WHEN sales_amount_inr > 0 THEN sales_amount_inr
+            ELSE 0
+        END
+    ) AS business_sales_inr,
     SUM(sales_amount_inr = 0) AS zero_value_transactions,
     SUM(sales_amount_inr < 0) AS negative_transactions
 FROM transaction_clean;
