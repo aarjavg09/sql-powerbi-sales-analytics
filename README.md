@@ -528,4 +528,24 @@ Skills demonstrated in this project:
 - Data Modeling
 - Business Analytics
 
+## 📊 Dashboard
+
+### Executive Overview
+![Executive Overview](screenshots/executive_overview.png)
+
+### Sales & Customer Analysis
+![Sales & Customer Analysis](screenshots/sales_customer_analysis.png)
+
+### Customer & Channel Analysis
+![Customer & Channel Analysis](screenshots/customer_channel_analysis.png)
+
+### Data Model
+![Data Model](screenshots/data_model.png)
+
+## 📚 Documentation
+
+- [Data Dictionary](documentation/data_dictionary.md)
+- [Business Logic](documentation/business_logic.md)
+- [Project Architecture](documentation/architecture.md)
+
 
