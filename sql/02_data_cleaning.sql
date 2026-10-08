@@ -1,21 +1,11 @@
--
 -- SQL + Power BI Sales Analytics
 -- 02_data_cleaning.sql
--- Purpose: Document and validate non-destructive data preparation
--- ============================================================
 
 USE sales;
--- ============================================================
--- 1. Currency Standardization
--- ============================================================
--- Currency values are standardized before calculating the
--- normalized INR sales amount.
---
--- INR transactions use the recorded sales amount.
--- USD transactions are converted using exchange_rate_to_inr.
---
--- This transformation is represented below without modifying
--- the source transaction table.
+
+
+-- Check the currencies present in the transaction data.
+-- sales_amount_inr is the normalized amount used for analysis.
 
 SELECT
     currency,
@@ -25,11 +15,8 @@ GROUP BY currency
 ORDER BY transaction_count DESC;
 
 
--- ============================================================
--- 2. Normalized INR Sales Amount Validation
--- ============================================================
--- The finalized transaction_clean table contains
--- sales_amount_inr after currency normalization.
+-- Check that INR transactions were kept at their original amount
+-- and that no normalized INR values are missing.
 
 SELECT
     COUNT(*) AS total_transactions,
@@ -45,10 +32,7 @@ SELECT
 FROM transaction_clean;
 
 
--- ============================================================
--- 3. Currency Conversion Validation
--- ============================================================
--- Validate USD transactions against the recorded exchange rate.
+-- Validate the INR conversion for USD transactions.
 
 SELECT
     COUNT(*) AS usd_transactions,
@@ -64,15 +48,10 @@ FROM transaction_clean
 WHERE TRIM(currency) = 'USD';
 
 
--- ============================================================
--- 4. Duplicate Review
--- ============================================================
--- Duplicate records were investigated during the data audit.
--- Records were not blindly deleted because the source data does
--- not contain a dedicated transaction_id.
---
--- The following query identifies repeated transaction-level
--- combinations for review.
+-- Review repeated transaction records.
+-- There is no transaction_id in the source data, so duplicates
+-- are reviewed using the available transaction-level columns
+-- instead of deleting them automatically.
 
 SELECT
     product_code,
@@ -96,12 +75,8 @@ HAVING COUNT(*) > 1
 ORDER BY duplicate_count DESC;
 
 
--- ============================================================
--- 5. Zero-Value Transaction Treatment
--- ============================================================
--- Zero-value transactions are retained in the analytical data.
--- They are excluded from Business Sales through the
--- is_business_sale business rule.
+-- Keep zero-value transactions in the dataset for audit purposes.
+-- They are excluded from Business Sales later.
 
 SELECT
     COUNT(*) AS zero_value_transactions,
@@ -110,12 +85,8 @@ FROM transaction_clean
 WHERE sales_amount_inr = 0;
 
 
--- ============================================================
--- 6. Negative Transaction Treatment
--- ============================================================
--- Negative transactions are retained for auditability.
--- They are excluded from Business Sales through the
--- is_business_sale business rule.
+-- Keep negative transactions for audit purposes.
+-- They are not treated as Business Sales.
 
 SELECT
     COUNT(*) AS negative_transactions,
@@ -124,19 +95,14 @@ FROM transaction_clean
 WHERE sales_amount_inr < 0;
 
 
--- ============================================================
--- 7. Business Sale Classification
--- ============================================================
--- Positive-value transactions are treated as business sales.
---
--- Zero-value and negative transactions remain in the dataset
--- but do not contribute to Business Sales.
+-- Classify transactions based on their normalized sales value.
+-- Positive transactions are treated as Business Sales.
 
 SELECT
     CASE
         WHEN sales_amount_inr > 0 THEN 'Business Sale'
         WHEN sales_amount_inr = 0 THEN 'Zero Value'
-        WHEN sales_amount_inr < 0 THEN 'Negative'
+        ELSE 'Negative'
     END AS sales_value_type,
     COUNT(*) AS transaction_count,
     SUM(sales_amount_inr) AS sales_amount_inr
@@ -145,18 +111,13 @@ GROUP BY
     CASE
         WHEN sales_amount_inr > 0 THEN 'Business Sale'
         WHEN sales_amount_inr = 0 THEN 'Zero Value'
-        WHEN sales_amount_inr < 0 THEN 'Negative'
+        ELSE 'Negative'
     END
 ORDER BY transaction_count DESC;
 
 
--- ============================================================
--- 8. Sales Quantity Preservation
--- ============================================================
--- Sales quantity is retained as recorded.
---
--- Quantity is NOT filtered using the business-sale condition.
--- This preserves operational transaction volume.
+-- Keep sales quantity exactly as recorded in the source.
+-- Quantity is not filtered based on sales value.
 
 SELECT
     COUNT(*) AS recorded_transactions,
@@ -164,15 +125,12 @@ SELECT
 FROM transaction_clean;
 
 
--- ============================================================
--- 9. Final Normalization Integrity Check
--- ============================================================
--- Final validation after the cleaning/normalization process.
+-- Final check after currency normalization and data preparation.
 
 SELECT
     COUNT(*) AS total_transactions,
     SUM(sales_amount_inr IS NULL) AS missing_normalized_amounts,
-    COUNT(DISTINCT TRIM(currency)) AS normalized_currency_count,
+    COUNT(DISTINCT TRIM(currency)) AS currency_count,
     MIN(order_date) AS first_transaction_date,
     MAX(order_date) AS last_transaction_date
 FROM transaction_clean;
