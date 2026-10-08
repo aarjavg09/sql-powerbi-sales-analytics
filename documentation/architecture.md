@@ -360,4 +360,6 @@ MySQL is responsible for data preparation, validation and analytical views.
 
 Power BI is responsible for semantic modeling, DAX calculations, visualization and interactive business reporting.
 
+![Project Architecture](../assets/architecture.png)
+
 This architecture keeps data quality, business logic and presentation layers separated while maintaining a clear path from source transactions to final dashboard insights.
