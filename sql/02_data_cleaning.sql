@@ -1,12 +1,10 @@
--- ============================================================
+-
 -- SQL + Power BI Sales Analytics
 -- 02_data_cleaning.sql
 -- Purpose: Document and validate non-destructive data preparation
 -- ============================================================
 
 USE sales;
-
-
 -- ============================================================
 -- 1. Currency Standardization
 -- ============================================================
