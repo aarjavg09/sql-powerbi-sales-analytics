@@ -388,45 +388,45 @@ These records were retained and quantified rather than silently removed.
 
 ## 🎯 Business Recommendations
 
-Based on the analytical findings, the following business actions could be considered.
+## 🎯 Business Recommendations
 
-### 1. Reduce Geographic Dependency
+Based on the analysis, the following business actions are recommended:
 
-Delhi NCR contributes approximately 52.75% of Business Sales.
+### 1. Reduce Customer Dependency
 
-The business should evaluate opportunities to strengthen sales in other markets to reduce dependency on a single geographic market.
+The top 5 customers contribute approximately 61% of total Business Sales.
 
-### 2. Strengthen Key Customer Retention
+The business should monitor dependency on high-value customers while developing strategies to diversify the customer base.
 
-The top 5 customers contribute approximately 61.02% of Business Sales.
+### 2. Reduce Market Concentration Risk
 
-These customers should receive focused retention and account-management strategies while the business simultaneously develops a broader customer base.
+The largest market contributes approximately 52.75% of Business Sales, while the top 5 markets contribute approximately 91.29%.
 
-### 3. Evaluate Channel Expansion
+Management should evaluate opportunities to strengthen lower-performing markets and reduce excessive dependence on a small number of markets.
 
-Brick & Mortar contributes approximately 75.6% of Business Sales compared with approximately 24.4% from E-Commerce.
+### 3. Strengthen E-Commerce Contribution
 
-The business could investigate opportunities to expand the E-Commerce channel where commercially viable.
+Brick & Mortar contributes approximately 75.6% of Business Sales, while E-Commerce contributes approximately 24.4%.
 
-### 4. Improve Product Master Governance
+The business can investigate opportunities to increase E-Commerce contribution through customer acquisition, product availability and channel-specific strategies.
 
-The presence of 60 transaction product codes missing from the product master affects 55,159 transactions.
+### 4. Investigate Product Mapping Gaps
 
-A controlled product-mapping and master-data governance process should be established to reduce reporting ambiguity.
+55,159 transactions are associated with products that are not mapped to the official product master.
 
-### 5. Investigate Comparable Sales Decline
+These products should be reviewed and mapped to the product master where valid, improving reporting completeness and product-level analysis.
 
-The comparable January–June sales decline of 13.63% requires further investigation.
+### 5. Monitor Transaction Quality
 
-Potential drivers should be evaluated across:
+The dataset contains 1,606 zero-value transactions and 1 negative transaction.
 
-- Markets
-- Customers
-- Products
-- Customer types
-- Monthly trends
+These records were retained for auditability. The underlying business process should be reviewed to understand why such transactions are being recorded.
 
-The dashboard identifies the decline but does not establish its causal drivers.
+### 6. Monitor Sales Performance
+
+Comparable sales for January 1 to June 26 declined by approximately 13.63% from 2019 to 2020.
+
+Management should investigate the factors behind this decline, including market, customer and product-level changes.
 
 ## ⚠️ Limitations
 
